@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+
+  --color-neon: #e7e5e4;
+  --color-neon-foreground: #000000;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+}
+
+@layer base {
+  :root {
+    --background: #0f1113;
+    --foreground: #f5f5f4;
+    --card: #17191c;
+    --card-foreground: #f5f5f4;
+    --popover: #17191c;
+    --popover-foreground: #f5f5f4;
+    --primary: #e7e5e4;
+    --primary-foreground: #000000;
+    --secondary: #1a1c20;
+    --secondary-foreground: #f5f5f4;
+    --muted: #1a1c20;
+    --muted-foreground: #b4b4b8;
+    --accent: #d6d3d1;
+    --accent-foreground: #000000;
+    --destructive: #ef4444;
+    --border: rgba(255, 255, 255, 0.08);
+    --input: rgba(255, 255, 255, 0.08);
+    --ring: #e7e5e4;
+    --radius: 1rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased selection:bg-neon selection:text-black;
+    color-scheme: dark;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+}
+
+.glass {
+  @apply bg-white/[0.035] backdrop-blur-xl border border-white/8;
+}
+
+.glass-dark {
+  @apply bg-black/24 backdrop-blur-2xl border border-white/6;
+}
+
+.neon-glow {
+  box-shadow: 0 0 18px rgba(231, 229, 228, 0.1), inset 0 0 6px rgba(231, 229, 228, 0.03);
+}
+
+.neon-glow-strong {
+  box-shadow: 0 0 28px rgba(231, 229, 228, 0.14);
+}
+
+.neon-text {
+  @apply text-neon;
+  text-shadow: 0 0 8px rgba(231, 229, 228, 0.12);
+}
+
+.cinematic-mask {
+  mask-image: linear-gradient(to bottom, black 0%, black 80%, transparent 100%);
+}
+
+.text-stroke {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+  color: transparent;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.bg-dot-pattern {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+@keyframes pulse-neon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-neon {
+  animation: pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}

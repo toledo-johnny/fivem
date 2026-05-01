@@ -1,0 +1,27 @@
+/*
+!/.gitignore
+!/README.md
+!/bot-discord/
+!/bot-discord/**
+!/web-sistema/
+!/web-sistema/**
+
+# Nested repositories
+**/.git/
+
+# Local secrets
+bot-discord/.env*
+web-sistema/.env*
+
+# Dependencies and build artifacts
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+**/.runtime/
+**/*.log
+**/.DS_Store
+
+# Keep tracked examples
+!bot-discord/.env.example
+!web-sistema/.env.example
