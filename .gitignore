@@ -1,6 +1,7 @@
 /*
 !/.gitignore
 !/README.md
+!/bd.sql
 !/bot-discord/
 !/bot-discord/**
 !/.github/
