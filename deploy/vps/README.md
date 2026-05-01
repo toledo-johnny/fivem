@@ -36,7 +36,8 @@ Secrets necessarios no GitHub:
 - `VPS_HOST`: IP ou dominio da VPS
 - `VPS_USER`: usuario SSH que executa o deploy
 - `VPS_SSH_KEY`: chave privada do usuario
-- `VPS_PORT`: opcional, padrao `22`
+
+Se sua VPS usa uma porta SSH diferente de `22`, ajuste o campo `port` no workflow antes de ativar o deploy automatico.
 
 ## Ponto importante
 
