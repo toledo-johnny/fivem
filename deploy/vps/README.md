@@ -1,0 +1,40 @@
+# VPS Ubuntu 24.04
+
+Estrutura pronta para subir o bot, a API e o front na Hostinger usando:
+
+- `PM2` para `discord-bot` e `portal-api`
+- `Nginx` para servir `web-sistema/dist`
+- proxy interno para `http://127.0.0.1:3050`
+
+## Arquivos esperados
+
+- `bot-discord/.env.vps`
+- `web-sistema/.env.vps`
+
+## Fluxo recomendado
+
+1. Clone o repositorio na VPS em `/opt/projeto-fivem`
+2. Rode `bash deploy/vps/setup-vps.sh`
+3. Ajuste seus arquivos `.env.vps`
+4. Rode `bash deploy/vps/deploy.sh`
+5. Libere no firewall da Hostinger apenas `22`, `80` e `443`
+
+## Atualizando a VPS
+
+Depois do primeiro setup, o fluxo de atualizacao fica:
+
+1. `cd /opt/projeto-fivem`
+2. `git pull origin main`
+3. `bash deploy/vps/deploy.sh`
+
+## Ponto importante
+
+- A porta `3050` deve ficar exposta apenas internamente na VPS
+- Quando trocar o IP por dominio, atualize `DASHBOARD_BASE_URL`, `DASHBOARD_WEB_ORIGIN`, `DISCORD_OAUTH_REDIRECT_URI` e as URLs do Mercado Pago para `https://seu-dominio`
+
+## Exemplos base
+
+- `deploy/vps/bot-discord.env.example`
+- `deploy/vps/web-sistema.env.example`
+- `deploy/vps/ecosystem.config.cjs`
+- `deploy/vps/nginx-base-fivem.conf`
