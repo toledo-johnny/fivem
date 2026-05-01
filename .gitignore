@@ -3,6 +3,8 @@
 !/README.md
 !/bot-discord/
 !/bot-discord/**
+!/.github/
+!/.github/**
 !/deploy/
 !/deploy/**
 !/web-sistema/

@@ -27,6 +27,17 @@ Depois do primeiro setup, o fluxo de atualizacao fica:
 2. `git pull origin main`
 3. `bash deploy/vps/deploy.sh`
 
+## Deploy automatico pelo GitHub
+
+O repositorio inclui `.github/workflows/deploy-vps.yml` para rodar deploy automatico a cada push na branch `main`.
+
+Secrets necessarios no GitHub:
+
+- `VPS_HOST`: IP ou dominio da VPS
+- `VPS_USER`: usuario SSH que executa o deploy
+- `VPS_SSH_KEY`: chave privada do usuario
+- `VPS_PORT`: opcional, padrao `22`
+
 ## Ponto importante
 
 - A porta `3050` deve ficar exposta apenas internamente na VPS

@@ -1,0 +1,31 @@
+name: Deploy VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy na VPS via SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || '22' }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd /opt/projeto-fivem
+            git fetch --all --prune
+            git checkout main
+            git pull --ff-only origin main
+            bash deploy/vps/deploy.sh
