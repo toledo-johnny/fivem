@@ -24,6 +24,14 @@ O projeto roda sem Gemini, sem AI Studio e sem integracoes com IA externa. A nav
 2. Inicie o ambiente de desenvolvimento:
    `npm run dev`
 
+## Ambientes separados
+
+- `npm run dev:localhost`: sobe o Vite usando `web-sistema/.env.localhost`
+- `npm run build:localhost`: gera build usando `web-sistema/.env.localhost`
+- `npm run build:vps`: gera build usando `web-sistema/.env.vps`
+
+Se `VITE_API_BASE_URL` nao for definido no build de producao, o front passa a usar o mesmo host do navegador. Isso facilita servir o React pelo Nginx e deixar a API atras de proxy na VPS.
+
 ## Scripts
 
 - `npm run dev`: sobe o servidor Vite na porta `3000`

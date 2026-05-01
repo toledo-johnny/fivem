@@ -19,8 +19,22 @@ import type {
   WhitelistState,
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || 'http://localhost:3050';
 const REQUEST_TIMEOUT_MS = 8_000;
+
+function resolveApiBaseUrl() {
+  const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
+  if (configuredBaseUrl) {
+    return configuredBaseUrl.replace(/\/+$/, '');
+  }
+
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+
+  return 'http://localhost:3050';
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 export class ApiError extends Error {
   statusCode: number;
@@ -45,7 +59,13 @@ function parseResponsePayload(text: string, fallbackStatusCode = 502) {
 }
 
 function buildUrl(path: string) {
-  return `${API_BASE_URL}${path}`;
+  if (/^https?:\/\//i.test(API_BASE_URL)) {
+    return new URL(path, `${API_BASE_URL}/`).toString();
+  }
+
+  const normalizedBase = API_BASE_URL.replace(/\/+$/, '');
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  return `${normalizedBase}${normalizedPath}`;
 }
 
 function toAbsoluteReturnTo(target?: string) {

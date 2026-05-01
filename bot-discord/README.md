@@ -28,6 +28,17 @@ Backend oficial do ecossistema compartilhado entre Discord, portal web e banco d
 3. Em outra janela, suba o bot:
    `npm run start:bot`
 
+## Ambientes separados
+
+- `npm run start:api:localhost`: sobe a API usando `bot-discord/.env.localhost`
+- `npm run start:bot:localhost`: sobe o bot usando `bot-discord/.env.localhost`
+- `npm run start:api:vps`: sobe a API usando `bot-discord/.env.vps`
+- `npm run start:bot:vps`: sobe o bot usando `bot-discord/.env.vps`
+- `npm run check:env:localhost`: valida o arquivo `bot-discord/.env.localhost`
+- `npm run check:env:vps`: valida o arquivo `bot-discord/.env.vps`
+
+Os arquivos de infraestrutura para Ubuntu 24.04 ficam em `../deploy/vps`.
+
 ## Scripts
 
 - `npm run start:api`: sobe a API HTTP oficial do portal e admin
