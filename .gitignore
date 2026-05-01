@@ -2,6 +2,8 @@
 !/.gitignore
 !/README.md
 !/bd.sql
+!/base-fivem/
+!/base-fivem/**
 !/bot-discord/
 !/bot-discord/**
 !/.github/
@@ -15,10 +17,16 @@
 **/.git/
 
 # Local secrets
+base-fivem/server/server.secrets.cfg
 bot-discord/.env*
 web-sistema/.env*
 
 # Dependencies and build artifacts
+base-fivem/artifacts/
+base-fivem/server/.replxx_history
+base-fivem/server/cache/
+base-fivem/server/txData/
+base-fivem/server/*.log
 **/node_modules/
 **/dist/
 **/build/

@@ -1,0 +1,16 @@
+[Unit]
+Description=FiveM FXServer
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/projeto-fivem/base-fivem/server
+ExecStart=/bin/bash /opt/projeto-fivem/base-fivem/server/start.sh
+Restart=on-failure
+RestartSec=5
+User=root
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target

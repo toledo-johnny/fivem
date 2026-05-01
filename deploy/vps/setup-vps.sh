@@ -5,7 +5,7 @@ NODE_MAJOR=20
 
 apt update
 apt upgrade -y
-apt install -y curl ca-certificates gnupg nginx git build-essential
+apt install -y curl ca-certificates gnupg nginx git build-essential xz-utils
 
 mkdir -p /etc/apt/keyrings
 if [ ! -f /etc/apt/keyrings/nodesource.gpg ]; then

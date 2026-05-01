@@ -18,6 +18,11 @@ npm run build:vps
 pm2 startOrReload "${PROJECT_ROOT}/deploy/vps/ecosystem.config.cjs" --update-env
 pm2 save
 
+if [ -f /etc/systemd/system/fivem.service ]; then
+  systemctl daemon-reload
+  systemctl restart fivem
+fi
+
 ln -sfn "${PROJECT_ROOT}/deploy/vps/nginx-base-fivem.conf" "$NGINX_AVAILABLE"
 ln -sfn "$NGINX_AVAILABLE" "$NGINX_ENABLED"
 rm -f /etc/nginx/sites-enabled/default
