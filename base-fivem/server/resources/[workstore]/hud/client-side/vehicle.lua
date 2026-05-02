@@ -35,6 +35,12 @@ local SeatbeltSpeed = 0
 local SeatbeltLock = false
 local SeatbeltVelocity = vec3(0,0,0)
 -----------------------------------------------------------------------------------------------------------------------------------------
+-- SANITIZEPLATE
+-----------------------------------------------------------------------------------------------------------------------------------------
+local function SanitizePlate(Plate)
+	return string.upper(string.gsub(Plate or "","%s+",""))
+end
+-----------------------------------------------------------------------------------------------------------------------------------------
 -- THREADSYSTEM
 -----------------------------------------------------------------------------------------------------------------------------------------
 CreateThread(function()
@@ -58,7 +64,7 @@ CreateThread(function()
 				local Gear = GetVehicleCurrentGear(Vehicle)
 				local VSpeed = GetEntitySpeed(Vehicle) * 3.6
 				local VDrift = GetDriftTyresEnabled(Vehicle)
-				local Plate = GetVehicleNumberPlateText(Vehicle)
+				local Plate = SanitizePlate(GetVehicleNumberPlateText(Vehicle))
 				local VLocked = GetVehicleDoorLockStatus(Vehicle)
 				local _,VHeadlight,VHighBeam = GetVehicleLightsState(Vehicle)
 
@@ -173,7 +179,7 @@ function NitroEnable()
 			local Vehicle = GetVehiclePedIsUsing(Ped)
 			if GetPedInVehicleSeat(Vehicle,-1) == Ped then
 				if GetVehicleTopSpeedModifier(Vehicle) < 50.0 then
-					local Plate = GetVehicleNumberPlateText(Vehicle)
+					local Plate = SanitizePlate(GetVehicleNumberPlateText(Vehicle))
 					NitroFuel = GlobalState["Nitro"][Plate] or 0
 
 					if NitroFuel >= 1 then
@@ -424,7 +430,7 @@ CreateThread(function()
 			end
 		end
 
-		Wait(timeDistance)
+		Wait(TimeDistance)
 	end
 end)
 -----------------------------------------------------------------------------------------------------------------------------------------

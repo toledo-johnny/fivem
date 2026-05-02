@@ -23,6 +23,12 @@ local Cooldown = GetGameTimer()
 local Anim = "machinic_loop_mechandplayer"
 local Dict = "anim@amb@clubhouse@tutorial@bkr_tut_ig3@"
 -----------------------------------------------------------------------------------------------------------------------------------------
+-- SANITIZEPLATE
+-----------------------------------------------------------------------------------------------------------------------------------------
+local function SanitizePlate(Plate)
+	return string.upper(string.gsub(Plate or "","%s+",""))
+end
+-----------------------------------------------------------------------------------------------------------------------------------------
 -- VARIAVEIS
 -----------------------------------------------------------------------------------------------------------------------------------------
 local Garages = {
@@ -603,7 +609,7 @@ AddEventHandler("garages:Delete",function(Vehicle)
 			DecorRemove(Vehicle,"PlayerVehicle")
 		end
 
-		vSERVER.Delete(VehToNet(Vehicle),GetEntityHealth(Vehicle),GetVehicleEngineHealth(Vehicle),GetVehicleBodyHealth(Vehicle),GetVehicleFuelLevel(Vehicle),Doors,Windows,Tyres,GetVehicleNumberPlateText(Vehicle))
+		vSERVER.Delete(VehToNet(Vehicle),GetEntityHealth(Vehicle),GetVehicleEngineHealth(Vehicle),GetVehicleBodyHealth(Vehicle),GetVehicleFuelLevel(Vehicle),Doors,Windows,Tyres,SanitizePlate(GetVehicleNumberPlateText(Vehicle)))
 	end
 end)
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -675,7 +681,7 @@ CreateThread(function()
 			local Ped = PlayerPedId()
 			if IsPedInAnyVehicle(Ped) then
 				local Vehicle = GetVehiclePedIsUsing(Ped)
-				local Plate = GetVehicleNumberPlateText(Vehicle)
+				local Plate = SanitizePlate(GetVehicleNumberPlateText(Vehicle))
 				if GetPedInVehicleSeat(Vehicle,-1) == Ped and not GlobalState["Plates"][Plate] and Plate ~= "PDMSPORT" then
 					SetVehicleEngineOn(Vehicle,false,true,true)
 					DisablePlayerFiring(Ped,true)

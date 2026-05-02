@@ -15,6 +15,7 @@ vSERVER = Tunnel.getInterface("hud")
 -- GLOBAL
 -----------------------------------------------------------------------------------------------------------------------------------------
 Display = false
+local HudVisible = nil
 -----------------------------------------------------------------------------------------------------------------------------------------
 -- VARIABLES
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -63,6 +64,45 @@ local LuckTimer = 0
 local Dexterity = 0
 local DexterityTimer = 0
 -----------------------------------------------------------------------------------------------------------------------------------------
+-- HUD:SYNCBODY
+-----------------------------------------------------------------------------------------------------------------------------------------
+local function SyncHudBody(Status)
+	local Visible = Status and true or false
+
+	if HudVisible ~= Visible then
+		SendNUIMessage({ name = "Body", payload = Visible })
+		HudVisible = Visible
+	end
+end
+
+local function RefreshHudVisibility()
+	SyncHudBody(LocalPlayer["state"]["Active"] and Display and not IsPauseMenuActive())
+end
+
+CreateThread(function()
+	while LocalPlayer["state"]["Player"] == nil do
+		Wait(500)
+	end
+
+	if LocalPlayer["state"]["Active"] then
+		Display = true
+	end
+
+	RefreshHudVisibility()
+end)
+
+AddEventHandler("onClientResourceStart",function(ResourceName)
+	if ResourceName ~= GetCurrentResourceName() then
+		return
+	end
+
+	if LocalPlayer["state"]["Active"] then
+		Display = true
+	end
+
+	RefreshHudVisibility()
+end)
+-----------------------------------------------------------------------------------------------------------------------------------------
 -- THREADTIMER
 -----------------------------------------------------------------------------------------------------------------------------------------
 CreateThread(function()
@@ -70,45 +110,41 @@ CreateThread(function()
 		if LocalPlayer["state"]["Active"] then
 			local Ped = PlayerPedId()
 
-			if IsPauseMenuActive() then
-				SendNUIMessage({ name = "Body", payload = false })
-			else
-				if Display then
-					SendNUIMessage({ name = "Body", payload = true })
+			RefreshHudVisibility()
 
-					local Coords = GetEntityCoords(Ped)
-					local Armouring = GetPedArmour(Ped)
-					local Healing = GetEntityHealth(Ped)
-					local MinRoad,MinCross = GetStreetNameAtCoord(Coords["x"],Coords["y"],Coords["z"])
-					local FullRoad = GetStreetNameFromHashKey(MinRoad)
-					local FullCross = GetStreetNameFromHashKey(MinCross)
+			if Display and not IsPauseMenuActive() then
+				local Coords = GetEntityCoords(Ped)
+				local Armouring = GetPedArmour(Ped)
+				local Healing = GetEntityHealth(Ped)
+				local MinRoad,MinCross = GetStreetNameAtCoord(Coords["x"],Coords["y"],Coords["z"])
+				local FullRoad = GetStreetNameFromHashKey(MinRoad)
+				local FullCross = GetStreetNameFromHashKey(MinCross)
 
-					if Health ~= Healing then
-						if Healing < 0 then
-							Healing = 0
-						end
-
-						SendNUIMessage({ name = "Health", payload = Healing - 100 })
-						Health = Healing
+				if Health ~= Healing then
+					if Healing < 0 then
+						Healing = 0
 					end
 
-					if Armour ~= Armouring then
-						SendNUIMessage({ name = "Armour", payload = Armouring })
-						Armour = Armouring
-					end
-
-					if FullRoad ~= "" and Road ~= FullRoad then
-						SendNUIMessage({ name = "Road", payload = FullRoad })
-						Road = FullRoad
-					end
-
-					if FullCross ~= "" and Crossing ~= FullCross then
-						SendNUIMessage({ name = "Crossing", payload = FullCross })
-						Crossing = FullCross
-					end
-
-					SendNUIMessage({ name = "Clock", payload = { GlobalState["Hours"], GlobalState["Minutes"] } })
+					SendNUIMessage({ name = "Health", payload = Healing - 100 })
+					Health = Healing
 				end
+
+				if Armour ~= Armouring then
+					SendNUIMessage({ name = "Armour", payload = Armouring })
+					Armour = Armouring
+				end
+
+				if FullRoad ~= "" and Road ~= FullRoad then
+					SendNUIMessage({ name = "Road", payload = FullRoad })
+					Road = FullRoad
+				end
+
+				if FullCross ~= "" and Crossing ~= FullCross then
+					SendNUIMessage({ name = "Crossing", payload = FullCross })
+					Crossing = FullCross
+				end
+
+				SendNUIMessage({ name = "Clock", payload = { GlobalState["Hours"], GlobalState["Minutes"] } })
 			end
 
 			if Luck > 0 and LuckTimer <= GetGameTimer() then
@@ -162,6 +198,8 @@ CreateThread(function()
 					TriggerEvent("Notify","amarelo","Sofrendo de Stress.",4000)
 				end)
 			end
+		else
+			SyncHudBody(false)
 		end
 
 		Wait(1000)
@@ -225,15 +263,15 @@ end)
 -- HUD:ACTIVE
 -----------------------------------------------------------------------------------------------------------------------------------------
 AddEventHandler("hud:Active",function(Status)
-	SendNUIMessage({ name = "Body", payload = { Status = Display } })
-	Display = Status
+	Display = Status and true or false
+	RefreshHudVisibility()
 end)
 -----------------------------------------------------------------------------------------------------------------------------------------
 -- HUD
 -----------------------------------------------------------------------------------------------------------------------------------------
 RegisterCommand("hud",function()
 	Display = not Display
-	SendNUIMessage({ name = "Body", payload = { Display } })
+	RefreshHudVisibility()
 
 	if not Display then
 		if IsMinimapRendering() then
@@ -246,7 +284,7 @@ end)
 -----------------------------------------------------------------------------------------------------------------------------------------
 RegisterNetEvent("Progress")
 AddEventHandler("Progress",function(Message,Timer)
-	SendNUIMessage({ name = "Progress", payload = { Timer } })
+	SendNUIMessage({ name = "Progress", payload = Timer })
 end)
 -----------------------------------------------------------------------------------------------------------------------------------------
 -- MUMBLECONNECTED

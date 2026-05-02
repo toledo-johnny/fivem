@@ -19,17 +19,11 @@ local Spawn = {}
 local Signal = {}
 local Searched = {}
 local Propertys = {}
-local StockSpawnVehicles = {
-	["22550i"] = true,
-	["f850"] = true,
-	["bmwi8"] = true,
-	["bmwm4gts"] = true,
-	["bmws"] = true,
-	["bmwg07"] = true
-}
-
-local function IsStockSpawnVehicle(Model)
-	return StockSpawnVehicles[Model] == true
+-----------------------------------------------------------------------------------------------------------------------------------------
+-- SANITIZEPLATE
+-----------------------------------------------------------------------------------------------------------------------------------------
+local function SanitizePlate(Plate)
+	return string.upper(string.gsub(Plate or "","%s+",""))
 end
 -----------------------------------------------------------------------------------------------------------------------------------------
 -- VERIFY
@@ -52,7 +46,7 @@ GlobalState["Plates"] = {}
 -----------------------------------------------------------------------------------------------------------------------------------------
 -- SERVERVEHICLE
 -----------------------------------------------------------------------------------------------------------------------------------------
-function WorkStore.ServerVehicle(Model,x,y,z,Heading,Plate,Nitrox,Doors,Body,Fuel,Locked)
+function WorkStore.ServerVehicle(Model,x,y,z,Heading,Plate,Nitrox,Doors,Body,Fuel)
 	local Vehicle = CreateVehicle(Model,x,y,z,Heading,true,true)
 
 	while not DoesEntityExist(Vehicle) do
@@ -61,9 +55,10 @@ function WorkStore.ServerVehicle(Model,x,y,z,Heading,Plate,Nitrox,Doors,Body,Fue
 
 	if DoesEntityExist(Vehicle) then
 		if Plate ~= nil then
+			Plate = SanitizePlate(Plate)
 			SetVehicleNumberPlateText(Vehicle,Plate)
 		else
-			Plate = vRP.GeneratePlate()
+			Plate = SanitizePlate(vRP.GeneratePlate())
 			SetVehicleNumberPlateText(Vehicle,Plate)
 		end
 
@@ -88,11 +83,7 @@ function WorkStore.ServerVehicle(Model,x,y,z,Heading,Plate,Nitrox,Doors,Body,Fue
 
 		if Model ~= "wheelchair" then
 			local Network = NetworkGetEntityFromNetworkId(Network)
-			if Locked == false then
-				SetVehicleDoorsLocked(Network,1)
-			else
-				SetVehicleDoorsLocked(Network,2)
-			end
+			SetVehicleDoorsLocked(Network,2)
 
 			local Nitro = GlobalState["Nitro"]
 			Nitro[Plate] = Nitrox or 0
@@ -214,6 +205,7 @@ local Garages = {
 -- SIGNALREMOVE
 -----------------------------------------------------------------------------------------------------------------------------------------
 AddEventHandler("signalRemove",function(Plate)
+	Plate = SanitizePlate(Plate)
 	if not Signal[Plate] then
 		Signal[Plate] = true
 	end
@@ -222,6 +214,7 @@ end)
 -- PLATEREVERYONE
 -----------------------------------------------------------------------------------------------------------------------------------------
 AddEventHandler("plateReveryone",function(Plate)
+	Plate = SanitizePlate(Plate)
 	if GlobalState["Plates"][Plate] then
 		local Plates = GlobalState["Plates"]
 		Plates[Plate] = nil
@@ -232,6 +225,7 @@ end)
 -- PLATEEVERYONE
 -----------------------------------------------------------------------------------------------------------------------------------------
 AddEventHandler("plateEveryone",function(Plate)
+	Plate = SanitizePlate(Plate)
 	local Plates = GlobalState["Plates"]
 	Plates[Plate] = true
 	GlobalState:set("Plates",Plates,true)
@@ -240,6 +234,7 @@ end)
 -- PLATEPLAYERS
 -----------------------------------------------------------------------------------------------------------------------------------------
 AddEventHandler("platePlayers",function(Plate,Passport)
+	Plate = SanitizePlate(Plate)
 	if not vRP.PassportPlate(Plate) then
 		local Plates = GlobalState["Plates"]
 		Plates[Plate] = Passport
@@ -620,7 +615,7 @@ function WorkStore.Spawn(Name, Number)
 
 		if vehicle[1] then
 			local Plates = GlobalState["Plates"]
-			local Plate = vehicle[1]["plate"]
+			local Plate = SanitizePlate(vehicle[1]["plate"])
 
 			if Spawn[Plate] then
 				if not Signal[Plate] then
@@ -679,11 +674,9 @@ function WorkStore.Spawn(Name, Number)
 					local Coords = vCLIENT.SpawnPosition(source,Number)
 					if Coords then
 						local Mods = nil
-						if not IsStockSpawnVehicle(Name) then
-							local Datatable = vRP.Query("entitydata/GetData",{ dkey = "Mods:"..Passport..":"..Name })
-							if parseInt(#Datatable) > 0 then
-								Mods = Datatable[1]["dvalue"]
-							end
+						local Datatable = vRP.Query("entitydata/GetData",{ dkey = "Mods:"..Passport..":"..Name })
+						if parseInt(#Datatable) > 0 then
+							Mods = Datatable[1]["dvalue"]
 						end
 
 						if Garages[Number]["payment"] then
@@ -755,7 +748,7 @@ RegisterCommand("car",function(source,Message)
 			local Coords = GetEntityCoords(Ped)
 			local Heading = GetEntityHeading(Ped)
 			local Plate = "VEH"..(10000 + Passport)
-			local Exist,Network,Vehicle = WorkStore.ServerVehicle(VehicleName,Coords["x"],Coords["y"],Coords["z"],Heading,Plate,2000,nil,1000,nil,false)
+			local Exist,Network,Vehicle = WorkStore.ServerVehicle(VehicleName,Coords["x"],Coords["y"],Coords["z"],Heading,Plate,2000,nil,1000)
 
 			if not Exist then
 				return
@@ -787,7 +780,7 @@ end)
 RegisterServerEvent("garages:Key")
 AddEventHandler("garages:Key",function(entity)
 	local source = source
-	local Plate = entity[1]
+	local Plate = SanitizePlate(entity[1])
 	local Passport = vRP.Passport(source)
 	if Passport and GlobalState["Plates"][Plate] == Passport then
 		vRP.GenerateItem(Passport,"vehkey-"..Plate,1,true,false)
@@ -800,8 +793,24 @@ RegisterServerEvent("garages:Lock")
 AddEventHandler("garages:Lock",function(Network,Plate)
 	local source = source
 	local Passport = vRP.Passport(source)
-	if Passport and GlobalState["Plates"][Plate] == Passport then
-		TriggerEvent("garages:LockVehicle",source,Network)
+	if Passport then
+		local Entity = NetworkGetEntityFromNetworkId(Network)
+		local VehiclePlate = SanitizePlate(Plate)
+		local ActualPlate = VehiclePlate
+
+		if DoesEntityExist(Entity) then
+			ActualPlate = SanitizePlate(GetVehicleNumberPlateText(Entity))
+		end
+
+		local OwnedPlate = GlobalState["Plates"][ActualPlate] == Passport or GlobalState["Plates"][VehiclePlate] == Passport
+		if not OwnedPlate then
+			local Vehicle = vRP.PassportPlate(ActualPlate)
+			OwnedPlate = Vehicle and parseInt(Vehicle["Passport"]) == Passport
+		end
+
+		if OwnedPlate then
+			TriggerEvent("garages:LockVehicle",source,Network)
+		end
 	end
 end)
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -831,6 +840,7 @@ end)
 -- DELETE
 -----------------------------------------------------------------------------------------------------------------------------------------
 function WorkStore.Delete(Network,Health,Engine,Body,Fuel,Doors,Windows,Tyres,Plate)
+	Plate = SanitizePlate(Plate)
 	if Spawn[Plate] then
 		local Passport = Spawn[Plate][1]
 		local vehName = Spawn[Plate][2]
@@ -865,6 +875,7 @@ end
 RegisterServerEvent("garages:deleteVehicle")
 AddEventHandler("garages:deleteVehicle",function(Network,Plate)
 	if Network ~= nil and Plate ~= nil then
+		Plate = SanitizePlate(Plate)
 		if GlobalState["Plates"][Plate] then
 			local Plates = GlobalState["Plates"]
 			Plates[Plate] = nil
@@ -895,7 +906,7 @@ AddEventHandler("garages:deleteVehicle",function(Network,Plate)
 		end
 
 		local Network = NetworkGetEntityFromNetworkId(Network)
-		if DoesEntityExist(Network) and not IsPedAPlayer(Network) and GetEntityType(Network) == 2 and GetVehicleNumberPlateText(Network) == Plate then
+		if DoesEntityExist(Network) and not IsPedAPlayer(Network) and GetEntityType(Network) == 2 and SanitizePlate(GetVehicleNumberPlateText(Network)) == Plate then
 			DeleteEntity(Network)
 		end
 	end
@@ -972,7 +983,7 @@ end)
 -- SIGNAL
 -----------------------------------------------------------------------------------------------------------------------------------------
 exports("Signal",function(Plate)
-	return Signal[Plate]
+	return Signal[SanitizePlate(Plate)]
 end)
 -----------------------------------------------------------------------------------------------------------------------------------------
 -- CONNECT

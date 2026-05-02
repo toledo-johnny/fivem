@@ -78,12 +78,10 @@ AddEventHandler("admin:vehicleTuning",function()
 		local vehicle = GetVehiclePedIsUsing(Ped)
 
 		SetVehicleModKit(vehicle,0)
-		for _,modType in ipairs({ 11,12,13,15,16 }) do
-			local maxMod = GetNumVehicleMods(vehicle,modType) - 1
-			if maxMod >= 0 then
-				SetVehicleMod(vehicle,modType,maxMod,false)
-			end
-		end
+		SetVehicleMod(vehicle,11,GetNumVehicleMods(vehicle,11) - 1,false)
+		SetVehicleMod(vehicle,12,GetNumVehicleMods(vehicle,12) - 1,false)
+		SetVehicleMod(vehicle,13,GetNumVehicleMods(vehicle,13) - 1,false)
+		SetVehicleMod(vehicle,15,GetNumVehicleMods(vehicle,15) - 1,false)
 		ToggleVehicleMod(vehicle,18,true)
 	end
 end)

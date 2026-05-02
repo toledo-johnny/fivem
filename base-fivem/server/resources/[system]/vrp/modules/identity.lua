@@ -98,8 +98,14 @@ end
 -----------------------------------------------------------------------------------------------------------------------------------------
 -- PASSPORTPLATE
 -----------------------------------------------------------------------------------------------------------------------------------------
+local function SanitizePlate(Plate)
+    return string.upper(string.gsub(Plate or "","%s+",""))
+end
+-----------------------------------------------------------------------------------------------------------------------------------------
+-- PASSPORTPLATE
+-----------------------------------------------------------------------------------------------------------------------------------------
 function vRP.PassportPlate(Plate)
-    return vRP.Query("vehicles/plateVehicles",{ plate = Plate })[1] or false
+    return vRP.Query("vehicles/plateVehicles",{ plate = SanitizePlate(Plate) })[1] or false
 end
 -----------------------------------------------------------------------------------------------------------------------------------------
 -- USERPHONE
@@ -130,8 +136,8 @@ function vRP.GeneratePlate()
     local Passport = nil
     local Serial = ""
     repeat
-        Passport = vRP.PassportPlate((vRP.GenerateString("DDLLLDDD")))
         Serial = vRP.GenerateString("DDLLLDDD")
+        Passport = vRP.PassportPlate(Serial)
     until not Passport
     return Serial
 end

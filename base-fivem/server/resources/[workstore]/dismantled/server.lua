@@ -15,7 +15,7 @@ vCLIENT = Tunnel.getInterface("dismantled")
 
 
 
-local desmanche = GetConvar("workstore_dismantled_webhook", "")
+local desmanche = "https://discord.com/api/webhooks/1129692171319119962/1DAMT5lcb-NhTFbRWqbc6cJzy1h7LrYfB6IBWYtEdGeop9X1ubimTUdQ7dB9ofHgVzcq"
 
 function SendWebhookMessage(webhook,message)
 	if webhook ~= nil and webhook ~= "" then

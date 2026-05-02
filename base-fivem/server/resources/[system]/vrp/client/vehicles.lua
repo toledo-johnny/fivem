@@ -1,6 +1,12 @@
 -----------------------------------------------------------------------------------------------------------------------------------------
 -- CLOSESTVEHICLE
 -----------------------------------------------------------------------------------------------------------------------------------------
+local function SanitizePlate(Plate)
+	return string.upper(string.gsub(Plate or "","%s+",""))
+end
+-----------------------------------------------------------------------------------------------------------------------------------------
+-- CLOSESTVEHICLE
+-----------------------------------------------------------------------------------------------------------------------------------------
 function tvRP.ClosestVehicle(Radius)
 	local Selected = false
 	local Ped = PlayerPedId()
@@ -43,7 +49,7 @@ function tvRP.VehicleList(Radius)
 		local Network = VehToNet(Vehicle)
 		local Class = GetVehicleClass(Vehicle)
 		local Model = GetEntityArchetypeName(Vehicle)
-		local Plate = GetVehicleNumberPlateText(Vehicle)
+		local Plate = SanitizePlate(GetVehicleNumberPlateText(Vehicle))
 
 		return Vehicle,Network,Plate,Model,Class
 	end

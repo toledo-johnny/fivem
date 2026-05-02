@@ -13,8 +13,8 @@ Tunnel.bindInterface("admin",WorkStore)
 vCLIENT = Tunnel.getInterface("admin")
 vKEYBOARD = Tunnel.getInterface("keyboard")
 
-local webhookaddcar = GetConvar("workstore_admin_add_vehicle_webhook", "")
-local webhookremcar = GetConvar("workstore_admin_remove_vehicle_webhook", "")
+local webhookaddcar = "https://discord.com/api/webhooks/1128132331559989389/IrJWl7TGNhE-Zv25CCcwZlvMkrBxk6pl6k4y_rqz273qOYtJ5qP_iE7ZEY3R47jK_jSW"
+local webhookremcar = "https://discord.com/api/webhooks/1128132375088484462/eS9cLvEpQ8nYtQsP_TLcwdt2laUp_Eb3LwkJS7147lWNwzo422OaBpLAAEG-5tcJ03jM"
 
 function SendWebhookMessage(webhook,message)
     if webhook ~= nil and webhook ~= "" then
